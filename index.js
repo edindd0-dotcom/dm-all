@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits } = require("discord.js");
-const config = require("./config");
+require("dotenv").config();
 
 const client = new Client({
   intents: [
@@ -10,17 +10,19 @@ const client = new Client({
   ],
 });
 
-client.once("clientReady", () => {
+const PREFIX = "!";
+
+client.once("ready", () => {
   console.log(`${client.user.tag} aktif!`);
-  console.log(`Prefix: ${config.prefix}`);
+  console.log(`Prefix: ${PREFIX}`);
 });
 
 client.on("messageCreate", async (message) => {
   if (!message.guild) return;
   if (message.author.bot) return;
-  if (!message.content.startsWith(config.prefix)) return;
+  if (!message.content.startsWith(PREFIX)) return;
 
-  const args = message.content.slice(config.prefix.length).trim().split(/ +/);
+  const args = message.content.slice(PREFIX.length).trim().split(/ +/);
   const command = args.shift().toLowerCase();
 
   if (command === "dm") {
@@ -43,7 +45,7 @@ client.on("messageCreate", async (message) => {
       try {
         await member.send(text);
         sent++;
-        await new Promise((r) => setTimeout(r, 1));
+        await new Promise((r) => setTimeout(r, 100));
       } catch {
         failed++;
       }
@@ -53,4 +55,4 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-client.login(config.token);
+client.login(process.env.TOKEN);
